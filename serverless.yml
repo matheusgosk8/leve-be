@@ -1,5 +1,5 @@
 service: levis-be
-frameworkVersion: '3'
+frameworkVersion: '4'
 
 provider:
   name: aws
@@ -7,20 +7,24 @@ provider:
   region: sa-east-1
 
 functions:
-  hello:
-    handler: src/functions/hello.handler
+  agendas:
+    handler: src/agenda/controller/agenda.handler
     events:
       - http:
-          path: serverlessSetup/hello
+          path: api/agendas
           method: get
-  goodbye:
-    handler: src/functions/goodbye.handler
+  agendamento:
+    handler: src/agendamento/controller/agendamento.handler
     events:
       - http:
-          path: serverlessSetup/goodbye
+          path: api/agendamento
           method: post
 
 plugins:
-  - serverless-plugin-typescript
+  - serverless-offline
+
+package:
+  patterns:
+    - '!src/_tests_/**'
 
 resources:
