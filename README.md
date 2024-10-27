@@ -1,62 +1,115 @@
-# levis-be
+###Teste Técnico - Desenvolvedor Backend - Leve Saúde
+Responsável: **Matheus Lima Ferreira**
+email: mtsgosk8@gmail.com
+Github: https://github.com/matheusgosk8
 
-Criado por "MATHEUSGOSK8"
-mtsgosk8@gmail.com.
+---
 
-Este é um projeto de teste pata o cargo ''
+**Tabela de conteúdos**
 
-== Observações ==
-Este projeto utiliza o "Serverless framework V4".
-Configurações do prettier e esLint de acordo com práticas pessoais.
+[TOCM]
 
-== Estrutura geral do código ==
-Seguindo a recomendação de pastas disponibilizada no teste.
+[TOC]
 
-src/**tests**
-Arquivos de teste do jest, removida da produção no serverless.yml
+#Observações
+Versão do serverless framework : V4
+Gerênciador de pacotes: npm
+Versão do node.js: v22.0.0
 
-src/agenda/types
-src/agendamento/types
-Arquivos de type
+#Estrutura geral
+Seguindo as recomendações do teste.
 
-src/agenda/controller
-src/agendamento/controller
-Arquivos de handler da função lambda.
+├── src
+│ ├── **tests** #Arquivos de teste do jest, removida da produção no serverless.yml
+│ ├── agenda
+│ │ ├── controller
+│ │ │ └── agenda.ts
+│ │ ├── dto
+│ │ ├── iterface
+│ │ ├── mocks
+│ │ ├── service
+│ │ ├── **types** Pasta para os arquivos de types da
+agenda.
 
-== .env, .env.example e produção ==
-Url da função em modo local está presenta no arquivo .env e .env.example, para produção, alterar
-apenas o valor das variáveis em .env.example, sendo necessário renomear este arquivo para .env
-na CI para produção.
+│ ├── agendamento
+│ │ ├── controller
+│ │ │ └── agendamento.ts
+│ │ ├── dto
+│ │ ├── iterface
+│ │ ├── mocks
+│ │ ├── service
+│ │ ├── types
+│ └── utils
+│ │ ├── getAgendamentos.ts
+│ │ ├── getAgenda.ts
+└── ..
 
-== Iniciando o projeto ==
-Rodar os scripts de inicialização presente em "package.json"
+#Iniciando o projeto
+Todos os scripts de inicialização foram escritos no arquivo "package.json"
 
--> Modo dev
+-> Instalando pacotes e dependências
 
-> npm run dev
+`$ npm i`
 
-// Inicializa uma versão que utiliza o plugin "serverless-offline" no port 3000.
+-> Dev
 
--> Modo prod
+`$ npm run dev`
 
-> npm run prod
+Roda a build em modo de desenvolvimento, utilizando o plugin "serverless offline", inicia as funções no porte 3000.
 
-Inicializa a função ligada a minha conta da AWS onde a lambda function está registrada, ainda segue o
-stage de "dev" do serverless framework
+**http://localhost:3000/dev/api/agenda**
+Rota de get com as informações dos médicos e horários disponíveis.
 
-== Testes ==
-Rodar os scripts de inicialização presentes em "package.json"
+**http://localhost:3000/dev/api/agendamento**
+Rota de post para o agendamento de consultas.
 
-> npm run test
+#Testes
+Testes utilizando o "jest", todos os arquivos de teste estão localizados na pasta de testes.
 
-// Roda todos os arquivos de teste do "jest" na aplicação.
+##Teste geral
+Script que roda todos os arquivos de testes, colocando os resultados no output do terminal.
 
-> npm run jest -watch
+`$ npm run test`
 
-// Roda e acompanha todos os arquivos de testes do "jest" na aplicação
+## Teste monitoramento
 
-// Para a agenda, é rodado uma função de fetch para a url da lambda function na rota de get, retornando null
-// caso o teste falhe.
+Roda os testes em modo de monitoramento.
 
-// Para o agendamento é rodado uma função específica utilizada na rota que busca o médico e os horáriois
-// disponíveis para o agendamento.
+`$ npm run test:watch`
+
+## Teste coverage
+
+Roda os testes em modo de detalhamento
+
+`$npm run test:coverge`
+
+## Estrutura dos testes
+
+Os testes unitários foram separados em dois tipos, para "agenda" é realizado um fetch na url da função de get, para o agendamento é utilizado uma função própria que busca no arquivo medicos.json, retornando multiplos resultados de acordo com os parâmetros da função.
+
+### Agenda
+
+Teste para a rota de get da agenda.
+**src/utils/getAgenda.ts**
+
+Sucesso -> Qualquer retorno não nulo.
+Falha -> Retorno null do catch da função de fetch.
+
+### Agendamento
+
+Teste para a rota de post do agendamento.
+**src/utils/getAgendamentos.ts**
+Ao invês de testar a função lambda em sí, aqui foi testado uma função específica utilizada para determinar os resultados da tentativa de agendamento:
+
+```seq
+Cliente-API: Dados válidos
+API-Cliente: status: 200, Resposta esperada!
+Cliente-API:  medico_id inválido
+API-Cliente: status: 200, édico não encontrado!
+Cliente-API: Horário inválido
+API-Cliente: status: 200, orário não disponível!
+Cliente-API: Dados inválidos
+API-Cliente: Status 500, erro Interno
+```
+
+A função de busca retorna null caso os parâmetros da função não sejam validados de acordo com o type esperado.
